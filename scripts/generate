@@ -1,0 +1,102 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
+
+echo "Generating \"$2\" resource..."
+mkdir app/api/v1/$1/$2
+echo "Component directory created - app/api/v1/$1/$2"
+
+touch app/api/v1/$1/$2/$2_controller.js
+echo "'use strict';" >> app/api/v1/$1/$2/$2_controller.js
+echo "" >> app/api/v1/$1/$2/$2_controller.js
+echo "let BaseResourceController = require('../base_resource_controller');" >> app/api/v1/$1/$2/$2_controller.js
+echo "" >> app/api/v1/$1/$2/$2_controller.js
+echo "class Controller extends BaseResourceController {" >> app/api/v1/$1/$2/$2_controller.js
+echo "    constructor(db) {" >> app/api/v1/$1/$2/$2_controller.js
+echo "        super(db, '$2');" >> app/api/v1/$1/$2/$2_controller.js
+echo "    }" >> app/api/v1/$1/$2/$2_controller.js
+echo "}" >> app/api/v1/$1/$2/$2_controller.js
+echo "" >> app/api/v1/$1/$2/$2_controller.js
+echo "module.exports = Controller;" >> app/api/v1/$1/$2/$2_controller.js
+echo "" >> app/api/v1/$1/$2/$2_controller.js
+echo "Controller created - app/api/v1/$1/$2/$2_controller.js"
+
+touch app/api/v1/$1/$2/$2_model.js
+echo "'use strict';" >> app/api/v1/$1/$2/$2_model.js
+echo "" >> app/api/v1/$1/$2/$2_model.js
+echo "module.exports = function(sequelize, DataTypes) {" >> app/api/v1/$1/$2/$2_model.js
+echo "    let Model = sequelize.define('$2', {" >> app/api/v1/$1/$2/$2_model.js
+echo "        name: DataTypes.STRING," >> app/api/v1/$1/$2/$2_model.js
+echo "        deleted_at: DataTypes.DATE" >> app/api/v1/$1/$2/$2_model.js
+echo "    }, {});" >> app/api/v1/$1/$2/$2_model.js
+echo "" >> app/api/v1/$1/$2/$2_model.js
+echo "    return Model;" >> app/api/v1/$1/$2/$2_model.js
+echo "};" >> app/api/v1/$1/$2/$2_model.js
+echo "" >> app/api/v1/$1/$2/$2_model.js
+echo "Model created - app/api/v1/$1/$2/$2_model.js"
+
+touch app/api/v1/$1/$2/$2_routes.js
+echo "'use strict';" >> app/api/v1/$1/$2/$2_routes.js
+echo "" >> app/api/v1/$1/$2/$2_model.js
+echo "let Controller = require('./$2_controller.js');" >> app/api/v1/$1/$2/$2_routes.js
+echo "" >> app/api/v1/$1/$2/$2_model.js
+echo "let Router = function(router, db) {" >> app/api/v1/$1/$2/$2_routes.js
+echo "    let $2 = new Controller(db);" >> app/api/v1/$1/$2/$2_routes.js
+echo "" >> app/api/v1/$1/$2/$2_model.js
+echo "    router" >> app/api/v1/$1/$2/$2_routes.js
+echo "        .route('/$2')" >> app/api/v1/$1/$2/$2_routes.js
+echo "        .get($2.index.bind($2))" >> app/api/v1/$1/$2/$2_routes.js
+echo "        .post($2.create.bind($2));" >> app/api/v1/$1/$2/$2_routes.js
+echo "" >> app/api/v1/$1/$2/$2_model.js
+echo "    router" >> app/api/v1/$1/$2/$2_routes.js
+echo "        .route('/$2/:id')" >> app/api/v1/$1/$2/$2_routes.js
+echo "        .get($2.show.bind($2))" >> app/api/v1/$1/$2/$2_routes.js
+echo "        .patch($2.update.bind($2))" >> app/api/v1/$1/$2/$2_routes.js
+echo "        .delete($2.destroy.bind($2));" >> app/api/v1/$1/$2/$2_routes.js
+echo "};" >> app/api/v1/$1/$2/$2_routes.js
+echo "" >> app/api/v1/$1/$2/$2_model.js
+echo "module.exports = Router;" >> app/api/v1/$1/$2/$2_routes.js
+echo "" >> app/api/v1/$1/$2/$2_routes.js
+echo "Routes created - app/api/v1/$1/$2/$2_routes.js"
+
+ROUTE_LINE="require('../api/v1/$1/$2/$2_routes.js')(routers.v1, db);"
+sed -i "/generate inject routes/a \ \ \ \ ${ROUTE_LINE}" app/main/app.js
+echo "Injected new routes in app/main/app.js"
+
+touch db/migrations/${TIMESTAMP}-create-$2.js
+echo "'use strict';" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "module.exports = {" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "    up: function(queryInterface, Sequelize) {" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "        return queryInterface.createTable('$2s', {" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "            id: {" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "                type: Sequelize.INTEGER," >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "                primaryKey: true," >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "                autoIncrement: true" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "            }," >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "            created_at: Sequelize.DATE," >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "            updated_at: Sequelize.DATE," >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "            deleted_at: Sequelize.DATE," >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "            name: {" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "                type: Sequelize.STRING" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "            }" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "        });" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "    }," >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "    down: function(queryInterface, Sequelize) {" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "        return queryInterface.dropTable('$2s');" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "    }" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "};" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "" >> db/migrations/${TIMESTAMP}-create-$2.js
+echo "Sequelize migration file created - db/migrations/${TIMESTAMP}-create-$2.js"
+
+echo -e "${GREEN}\"$2\" resource successfully created!${NC}"
+echo ""
+echo -e "${YELLOW}Customize migration and model files then run:${BLUE} sequelize db:migrate${NC}"
+echo ""

@@ -1,0 +1,6 @@
+{
+    "name": "pokemon-battle",
+    "version": "0.0.1",
+    "description": "Api Node/Express/Sequelize with ApiDoc.js",
+    "title": "Pokemon Battle"
+}

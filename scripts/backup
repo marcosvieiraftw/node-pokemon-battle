@@ -1,0 +1,43 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
+
+echo "Creating \"$1\" seed..."
+
+node scripts/node/mysql2json.js $1
+sed -i '1s/^/module.exports = /' db/js/$1.js
+echo "Data file created - db/js/$1.js"
+
+touch db/seeders/${TIMESTAMP}-$1.js
+echo "'use strict';" >> db/seeders/${TIMESTAMP}-$1.js
+echo "" >> db/seeders/${TIMESTAMP}-$1.js
+echo "let _ = require('lodash');" >> db/seeders/${TIMESTAMP}-$1.js
+echo "let data = require('../js/$1');" >> db/seeders/${TIMESTAMP}-$1.js
+echo "" >> db/seeders/${TIMESTAMP}-$1.js
+echo "module.exports = {" >> db/seeders/${TIMESTAMP}-$1.js
+echo "    up: function(queryInterface, Sequelize) {" >> db/seeders/${TIMESTAMP}-$1.js
+echo "        _.forEach(data, item => {" >> db/seeders/${TIMESTAMP}-$1.js
+echo "            item.created_at = new Date();" >> db/seeders/${TIMESTAMP}-$1.js
+echo "            item.updated_at = new Date();" >> db/seeders/${TIMESTAMP}-$1.js
+echo "        });" >> db/seeders/${TIMESTAMP}-$1.js
+echo "" >> db/seeders/${TIMESTAMP}-$1.js
+echo "        return queryInterface.bulkInsert('$1', data);" >> db/seeders/${TIMESTAMP}-$1.js
+echo "    }," >> db/seeders/${TIMESTAMP}-$1.js
+echo "" >> db/seeders/${TIMESTAMP}-$1.js
+echo "    down: function(queryInterface, Sequelize) {" >> db/seeders/${TIMESTAMP}-$1.js
+echo "        return queryInterface.dropTable('$1');" >> db/seeders/${TIMESTAMP}-$1.js
+echo "    }" >> db/seeders/${TIMESTAMP}-$1.js
+echo "};" >> db/seeders/${TIMESTAMP}-$1.js
+echo "" >> db/seeders/${TIMESTAMP}-$1.js
+echo "Sequelize seeder file created - db/seeders/${TIMESTAMP}-$1.js"
+
+echo -e "${GREEN}\"$1\" backup successfully created!${NC}"
+echo ""
+echo -e "${YELLOW}Customize seeder file then run:${BLUE} sequelize db:seed --seed ${TIMESTAMP}-$1.js${NC}"
+echo ""
